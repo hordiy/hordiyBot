@@ -31,6 +31,10 @@ def handle_docs_photo(message):
 
 @bot.message_handler(content_types=['text'])
 def sayHello(message):
+	print("{first_name} {last_name} ==> {message}".format(first_name=message.from_user.first_name,  
+														   last_name=message.from_user.last_name, 
+														   message=message))
+
 	if message.text.lower() in greeting and 6 <= now.hour < 12:
 		bot.send_message(message.chat.id, 'Доброе утро, {}'.format(message.from_user.first_name))
 	elif message.text.lower() in greeting and 12 <= now.hour < 17:
