@@ -31,17 +31,17 @@ def handle_docs_photo(message):
 @bot.message_handler(content_types=['text'])
 def sayHello(message):
 	if message.text.lower() in greeting and 6 <= now.hour < 12:
-		bot.send_message(message.chat.id, 'Доброе утро, {}'.format(message.chat.first_name))
+		bot.send_message(message.chat.id, 'Доброе утро, {}'.format(message.from_user.first_name))
 	elif message.text.lower() in greeting and 12 <= now.hour < 17:
-		bot.send_message(message.chat.id, 'Добрый день, {}'.format(message.chat.first_name))
+		bot.send_message(message.chat.id, 'Добрый день, {}'.format(message.from_user.first_name))
 	elif message.text.lower() in greeting and 17 <= now.hour < 23:
-		bot.send_message(message.chat.id, 'Добрый вечер, {}'.format(message.chat.first_name))
+		bot.send_message(message.chat.id, 'Добрый вечер, {}'.format(message.from_user.first_name))
 	elif message.text.lower() == 'курс':
 		exchange(message)
 		#bot.send_message(message.chat.id, usd)
 	else:
 		searchInfo(message)
-	print(message.chat.id)
+	
 
 def searchInfo(message):
 	if message.text.lower() == 'поиск':
