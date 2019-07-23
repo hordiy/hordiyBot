@@ -39,6 +39,8 @@ def sayHello(message):
 	elif message.text.lower() == 'курс':
 		exchange(message)
 		#bot.send_message(message.chat.id, usd)
+	elif message.text.lower() == 'погода':
+		weather(message)
 	else:
 		searchInfo(message)
 	
@@ -113,6 +115,38 @@ def serialize_exchange_diff(diff):
         result = '(' + str(diff)[1:] + ' <img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="<img draggable="false" data-mce-resize="false" data-mce-placeholder="1" data-wp-emoji="1" class="emoji" alt="↘️" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/2.3/svg/2198.svg">" src="https://s.w.org/images/core/emoji/72x72/2198.png">" src="https://s.w.org/images/core/emoji/72x72/2198.png">)'  
     return result
 
+
+import pyowm
+from colorama import init
+from colorama import Fore, Back, Style
+
+def weather(message):
+
+	init()
+
+	owm = pyowm.OWM("a53a2754ece8267b620ebf100d39617f", language="ru")
+
+	print(Fore.BLACK)
+	print(Back.GREEN)
+
+	#place = input("City/Country: ")
+
+	observation = owm.weather_at_place("Kharkiv")
+	w = observation.get_weather()
+
+	temp = w.get_temperature("celsius")["temp"]
+
+	bot.send_message(message.chat.id, "В городе {} сейчас {}".format("Харьков", w.get_detailed_status()))
+	bot.send_message(message.chat.id, "Температура в районе " + str(temp))
+
+	if temp < 10:
+		print(Back.CYAN)
+		bot.send_message(message.chat.id, "Сейчас очень холодно, одевайся!")
+	elif temp < 20:
+		bot.send_message(message.chat.id, "Холодно, одевайся потеплее.")
+	else:
+		print(Back.RED)
+		bot.send_message(message.chat.id, "Температура норм, одевай что угодно.")
 
 
 if __name__ == '__main__':
