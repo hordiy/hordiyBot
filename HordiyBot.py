@@ -114,10 +114,13 @@ def handle_docs_photo(message):
 def main(message):
 	superMain = Main()
 	
-	print("{time}: {first_name} {last_name} ==> {message}".format(first_name=message.from_user.first_name,  
-														   last_name=message.from_user.last_name, 
-														   message=message.text,
-														   time=superMain.now.utcnow()))
+	print("{time}: {first_name} {last_name} ==> {message}"
+		.format(time=superMain.now(pytz.timezone("Europe/Kiev")),
+				first_name=message.from_user.first_name,  
+				last_name=message.from_user.last_name, 
+				message=message.text,
+				))
+	
 	if message.text.lower() in GREETING:
 		superMain.sayHello(message)
 	elif message.text.lower() == 'курс':
