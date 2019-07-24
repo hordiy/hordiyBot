@@ -96,6 +96,8 @@ class Main(Weather, Currency, Search):
 			bot.send_message(message.chat.id, 'Добрый день, {}'.format(message.from_user.first_name))
 		elif message.text.lower() in GREETING and 17 <= self.now.hour < 23:
 			bot.send_message(message.chat.id, 'Добрый вечер, {}'.format(message.from_user.first_name))
+		else:
+			bot.send_message(message.chat.id, 'Доброй ночи, {}'.format(message.from_user.first_name))			
 
 # BackUp Photo to other group
 @bot.message_handler(content_types=['photo'])
