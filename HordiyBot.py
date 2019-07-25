@@ -86,11 +86,11 @@ class Currency:
 class Game:
 
 	def __init__(self):
-		self.figures = ["Камень", "Ножницы", "Бумага"]
+		self.figures = ["Камень", "Бумага", "Ножницы"]
 
 	def generate_markup(self):
 	    markup = types.ReplyKeyboardMarkup(row_width=3)
-	    markup.row("Камень", "Ножницы", "Бумага")
+	    markup.row("Камень", "Бумага", "Ножницы")
 	    return markup
 
 	def generate_figure(self):
