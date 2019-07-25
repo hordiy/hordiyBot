@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import random
 import config
 import telebot
 from telebot import types
@@ -11,6 +11,7 @@ from bs4 import BeautifulSoup
 import datetime
 import pytz
 import pyowm
+
 
 GREETING = ['здравствуй', 'привет', 'ку', 'здорово']
 
@@ -82,11 +83,33 @@ class Currency:
 			)
 		bot.send_message(message.chat.id, 'Выбери курс валют:', reply_markup=keyboard)
 
+class Game:
+
+	def __init__(self):
+		self.figures = ["Камень", "Ножницы", "Бумага"]
+
+	def generate_markup(self):
+	    markup = types.ReplyKeyboardMarkup(row_width=3)
+	    markup.row("Камень", "Ножницы", "Бумага")
+	    return markup
+
+	def generate_figure(self):
+	    return random.sample(self.figures, 1)
+
+	def define_winner(self, message):
+		answer, reply = message.text, self.generate_figure()[0]
+		status = self.figures.index(answer) - self.figures.index(reply)
+		responses = ['Ничья :d', 'Твоя победа :)', 'Твой проигрыш :(']
+		bot.send_message(message.chat.id,
+			'HordiyBot: ' + reply + '\nvs \n' + message.from_user.first_name + ': ' +
+			answer + '\n' + responses[status])
+
 # Main class with inheritance of other classes
-class Main(Weather, Currency, Search):
+class Main(Weather, Currency, Search, Game):
 	
 	def __init__(self):
 		Weather.__init__(self)
+		Game.__init__(self)
 		self.now = datetime.datetime.now(pytz.timezone("Europe/Kiev"))
 
 	def sayHello(self, message):
@@ -128,14 +151,19 @@ def main(message):
 		superMain.weather(message)
 	elif message.text.lower() == 'поиск':
 		superMain.searchInfo(message)
-	
+	elif message.text.lower() == 'игра':
+		bot.send_message(message.chat.id,
+                     'Выбери одно из трех:',
+                     reply_markup=superMain.generate_markup())
+	elif message.text in superMain.figures:
+		superMain.define_winner(message)		
+
 # Method for query
 @bot.callback_query_handler(func=lambda call: True)  
 def iq_callback(query):  
     data = query.data  
     if data.startswith('get-'):  
         get_ex_callback(query)
-
 
 def get_ex_callback(query):  
 	    bot.answer_callback_query(query.id)  
