@@ -21,7 +21,7 @@ bot = telebot.TeleBot(config.TOKEN)
 class Weather:
 
 	def __init__(self):
-		self.owm = pyowm.OWM("a53a2754ece8267b620ebf100d39617f", language="ru")
+		self.owm = pyowm.OWM("Your token owm", language="ru")
 		self.observation = self.owm.weather_at_place("Kharkiv")
 		self.w = self.observation.get_weather()
 		self.temp: float = self.w.get_temperature("celsius")["temp"]
@@ -131,7 +131,7 @@ def handle_docs_photo(message: str) -> str:
         file_info = bot.get_file(message.photo[len(message.photo)-1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
       
-        bot.forward_message(-1001230103900, message.chat.id, message.message_id)
+        bot.forward_message(id_to_chat, message.chat.id, message.message_id)
         bot.reply_to(message,"Фото добавлено")
          
         src= file_info.file_path;
