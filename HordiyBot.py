@@ -13,6 +13,7 @@ import datetime
 import pytz
 import pyowm
 from typing import List
+import detection
 
 bot = telebot.TeleBot(config.TOKEN)
 
@@ -36,7 +37,7 @@ class Weather:
 		elif self.temp < 20:
 			bot.send_message(message.chat.id, "Холодно, одевайся потеплее.")
 		else:
-			bot.send_message(message.chat.id, "Температура норм, одевай что угодно.")
+			bot.send_message(message.chat.id, "Температура норм, надевай что угодно.")
 
 # Class for select search 'google' or 'youtube'
 class Search:
@@ -124,21 +125,31 @@ class Main(Weather, Currency, Search, Game):
 
 # BackUp Photo to other group
 @bot.message_handler(content_types=['photo'])
-def handle_docs_photo(message: str) -> str:   
-    try:     
+def handle_docs_photo(message: str) -> str:
+    try:
+      
         file_info = bot.get_file(message.photo[len(message.photo)-1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
       
-        bot.forward_message(-294564167, message.chat.id, message.message_id)
-        bot.reply_to(message,"Фото добавлено") 
+        bot.forward_message(-1001230103900, message.chat.id, message.message_id)
+        bot.reply_to(message,"Фото добавлено")
+         
+        src= file_info.file_path;
+        with open(src, 'wb') as new_file:
+           new_file.write(downloaded_file)
+        detection.face_recong(src)
+        photo = open('image_with_boxes.jpg', 'rb')
+
+        bot.send_photo(message.chat.id, photo)
     except Exception as e:
-        bot.reply_to(message,e )
+        bot.reply_to(message, e)
+  
 
 # Main method for text
 @bot.message_handler(content_types=['text'])
 def main(message: str) -> str:
 	superMain = Main()
-	
+	print(message.chat.id)
 	print("{time}: {first_name} {last_name} ==> {message}".format(first_name=message.from_user.first_name,  
 														   last_name=message.from_user.last_name, 
 														   message=message.text,
