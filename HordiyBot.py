@@ -41,6 +41,14 @@ def help_message(message):
     bot.send_message(message.chat.id, msg)
 
 
+# BackUp Photo to private massage
+@bot.message_handler(commands=['backup'])
+def handle_docs_photo(message):
+    msg_lang = message_lang(message.from_user.language_code, 'Добавьте ваши данные', 'Attach you data')
+    msg = bot.send_message(message.chat.id, msg_lang)
+    bot.register_next_step_handler(msg, forward_message_for_users)
+
+
 @bot.message_handler(content_types=['text'])
 def print_message(message):
     import datetime
@@ -49,14 +57,6 @@ def print_message(message):
                                                                   message=message.text,
                                                                   time=datetime.datetime.now(
                                                                       pytz.timezone("Europe/Kiev"))))
-
-
-# BackUp Photo to private massage
-@bot.message_handler(commands=['backup'])
-def handle_docs_photo(message):
-    msg_lang = message_lang(message.from_user.language_code, 'Добавьте ваши данные', 'Attach you data')
-    msg = bot.send_message(message.chat.id, msg_lang)
-    bot.register_next_step_handler(msg, forward_message_for_users)
 
 
 def forward_message_for_users(message):
