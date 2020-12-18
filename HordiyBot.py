@@ -63,7 +63,8 @@ def forward_message_for_users(message):
     members = bot.get_chat_administrators(message.chat.id)
     print(bot.get_chat_members_count(message.chat.id))
     for member in members:
-        bot.forward_message(member.user.id, message.chat.id, message.message_id)
+        if member.status == 'creator' or member.status == 'administrator':
+            bot.forward_message(member.user.id, message.chat.id, message.message_id)
 
 
 if __name__ == '__main__':
