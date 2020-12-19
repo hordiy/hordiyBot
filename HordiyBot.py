@@ -1,26 +1,35 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import pytz
 import telebot
 from telebot.apihelper import ApiException
-
 import config
 
 bot = telebot.TeleBot(config.TOKEN)
 
-help_message_string_ru = '''Бот был разработан для резервного копирования ваших данных из групп в личном сообщении с 
-ботом. 1. Вам следует добавить бота в группу. 2. Команда /backup дает задание боту для резервного копирования данных. 
-Вы получите сообщение от бота и после этого вам нужно будет добавить ваши данные. 3. Вы получите резервную копию в 
-личном сообщении (Внимание, вы можете получить резервную копию, если у вас есть роль Админ или Создатель и вы начали 
-диалог с ботом в лс) '''
-help_message_string_en = '''This bot was developed to backup your data from groups in your private message with bot. 
-1. You should add bot to group. 2. The command /backup gives bot task to backup data. You will receive a message from 
-bot and after that you will need to attach your data. 3. You will receive a backup in a private message (Attention, 
-you can get backup if you have role Admin or Creator and you start conversation with bot in a private message) '''
+json_message = {
 
-exception_ru = "{user} не получил данные в лс, {user} обязан начать диалог с ботом в лс."
-exception_en = "{user} hasn't received data in a private message, {user} have to start conversation in a private " \
-               "message with a bot. "
+    'ru': {
+        'help_message_string': '''Бот был разработан для резервного копирования ваших данных из групп в личном сообщении с ботом. 
+    1. Вам следует добавить бота в группу. 
+    2. Команда /backup дает задание боту для резервного копирования данных. Вы получите сообщение от бота и после этого вам нужно будет добавить ваши данные. 
+    3. Вы получите резервную копию в личном сообщении (Внимание, вы можете получить резервную копию, если у вас есть роль Админ или Создатель и вы начали диалог с ботом в лс) ''',
+
+        'exception': 'Данные не были отправлены в личный сообщения следующим пользователям {users}. {users} нужно '
+                     'начать диалог с ботом в лс. ',
+    },
+    'en': {
+        'help_message_string': '''This bot was developed to backup your data from groups in your private message with bot. 
+    1. You should add bot to group. 
+    2. The command /backup gives bot task to backup data. You will receive a message from bot and after that you will need to attach your data. 
+    3. You will receive a backup in a private message (Attention, you can get backup if you have role Admin or Creator and you start conversation with bot in a private message) ''',
+
+        'exception': 'The data wasn\'t sent in a private message the following users: {users}. The {users} need to '
+                     'start a conversation in a private message with a bot. '
+    }
+
+}
 
 
 def message_lang(language_code, string_ru, string_en):
@@ -32,13 +41,19 @@ def message_lang(language_code, string_ru, string_en):
 
 @bot.message_handler(commands=['start'])
 def start_message(message):
-    msg = message_lang(message.from_user.language_code, help_message_string_ru, help_message_string_en)
+    msg = message_lang(message.from_user.language_code,
+                       json_message['ru']['help_message_string'],
+                       json_message['en']['help_message_string'])
+
     bot.send_message(message.chat.id, msg)
 
 
 @bot.message_handler(commands=['help'])
 def help_message(message):
-    msg = message_lang(message.from_user.language_code, help_message_string_ru, help_message_string_en)
+    msg = message_lang(message.from_user.language_code,
+                       json_message['ru']['help_message_string'],
+                       json_message['en']['help_message_string'])
+
     bot.send_message(message.chat.id, msg)
 
 
@@ -50,6 +65,25 @@ def handle_docs_photo(message):
     bot.register_next_step_handler(msg, forward_message_for_users)
 
 
+def forward_message_for_users(message):
+    users = []
+    members = bot.get_chat_administrators(message.chat.id)
+    print(bot.get_chat_members_count(message.chat.id))
+    msg = message_lang(message.from_user.language_code,
+                       json_message['ru']['exception'],
+                       json_message['en']['exception'])
+
+    for member in members:
+        try:
+            bot.forward_message(member.user.id, message.chat.id, message.message_id)
+        except ApiException:
+            users.append(member.user.username)
+            continue
+        finally:
+            if len(users) > 0:
+                bot.send_message(message.chat.id, msg.format(user=", ".join(users)))
+
+
 @bot.message_handler(content_types=['text'])
 def print_message(message):
     import datetime
@@ -58,18 +92,6 @@ def print_message(message):
                                                                   message=message.text,
                                                                   time=datetime.datetime.now(
                                                                       pytz.timezone("Europe/Kiev"))))
-
-
-def forward_message_for_users(message):
-    members = bot.get_chat_administrators(message.chat.id)
-    print(bot.get_chat_members_count(message.chat.id))
-    msg = message_lang(message.from_user.language_code, exception_ru, exception_en)
-    for member in members:
-        try:
-            bot.forward_message(member.user.id, message.chat.id, message.message_id)
-        except ApiException:
-            bot.send_message(message.chat.id, msg.format(user=member.user.username))
-            continue
 
 
 if __name__ == '__main__':
