@@ -8,19 +8,19 @@ import config
 
 bot = telebot.TeleBot(config.TOKEN)
 
-help_message_string_en = '''
-This bot was developed to backup your data from groups in your private message with bot. 
-1. You should add bot to group. 
-2. The command /backup gives bot task to backup data. You will receive a message from bot and after that 
-you will need to attach your data.
-3. You will receive a backup in a private message (Attention, you can get backup if you have role Admin or Creator)
-'''
+help_message_string_ru = '''Бот был разработан для резервного копирования ваших данных из групп в личном сообщении с 
+ботом. 1. Вам следует добавить бота в группу. 2. Команда /backup дает задание боту для резервного копирования данных. 
+Вы получите сообщение от бота и после этого вам нужно будет добавить ваши данные. 3. Вы получите резервную копию в 
+личном сообщении (Внимание, вы можете получить резервную копию, если у вас есть роль Админ или Создатель и вы начали 
+диалог с ботом в лс) '''
+help_message_string_en = '''This bot was developed to backup your data from groups in your private message with bot. 
+1. You should add bot to group. 2. The command /backup gives bot task to backup data. You will receive a message from 
+bot and after that you will need to attach your data. 3. You will receive a backup in a private message (Attention, 
+you can get backup if you have role Admin or Creator and you start conversation with bot in a private message) '''
 
-help_message_string_ru = '''
-Бот был разработан для резервного копирования ваших данных из групп в личном сообщении с ботом. 
-1. Вам следует добавить бота в группу. 
-2. Команда /backup дает задание боту для резервного копирования данных. Вы получите сообщение от бота и после этого вам нужно будет добавить ваши данные. 
-3. Вы получите резервную копию в личном сообщении (Внимание, вы можете получить резервную копию, если у вас есть роль Админ или Создатель) '''
+exception_ru = "{user} не получил данные в лс, {user} обязан начать диалог с ботом в лс."
+exception_en = "{user} hasn't received data in a private message, {user} have to start conversation in a private " \
+               "message with a bot. "
 
 
 def message_lang(language_code, string_ru, string_en):
@@ -63,10 +63,12 @@ def print_message(message):
 def forward_message_for_users(message):
     members = bot.get_chat_administrators(message.chat.id)
     print(bot.get_chat_members_count(message.chat.id))
+    msg = message_lang(message.from_user.language_code, exception_ru, exception_en)
     for member in members:
         try:
             bot.forward_message(member.user.id, message.chat.id, message.message_id)
         except ApiException:
+            bot.send_message(message.chat.id, msg.format(user=member.user))
             continue
 
 
