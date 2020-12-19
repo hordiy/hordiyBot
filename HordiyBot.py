@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import pytz
 import telebot
+from telebot.apihelper import ApiException
 
 import config
 
@@ -63,8 +64,10 @@ def forward_message_for_users(message):
     members = bot.get_chat_administrators(message.chat.id)
     print(bot.get_chat_members_count(message.chat.id))
     for member in members:
-        if member.status == 'creator' or member.status == 'administrator':
+        try:
             bot.forward_message(member.user.id, message.chat.id, message.message_id)
+        except ApiException:
+            continue
 
 
 if __name__ == '__main__':
