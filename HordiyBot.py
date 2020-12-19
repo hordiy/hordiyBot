@@ -16,7 +16,7 @@ json_message = {
     2. Команда /backup дает задание боту для резервного копирования данных. Вы получите сообщение от бота и после этого вам нужно будет добавить ваши данные. 
     3. Вы получите резервную копию в личном сообщении (Внимание, вы можете получить резервную копию, если у вас есть роль Админ или Создатель и вы начали диалог с ботом в лс) ''',
 
-        'exception': 'Данные не были отправлены в личный сообщения следующим пользователям {users}. {users} нужно '
+        'exception': 'Данные не были отправлены в личный сообщения следующим пользователям: {users}. {users} нужно '
                      'начать диалог с ботом в лс. ',
     },
     'en': {
@@ -79,9 +79,9 @@ def forward_message_for_users(message):
         except ApiException:
             users.append(member.user.username)
             continue
-        finally:
-            if len(users) > 0:
-                bot.send_message(message.chat.id, msg.format(users=", ".join(users)))
+
+    if len(users) > 0:
+        bot.send_message(message.chat.id, msg.format(users=", ".join(users)))
 
 
 @bot.message_handler(content_types=['text'])
