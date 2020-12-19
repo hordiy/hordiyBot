@@ -68,7 +68,7 @@ def forward_message_for_users(message):
         try:
             bot.forward_message(member.user.id, message.chat.id, message.message_id)
         except ApiException:
-            bot.send_message(message.chat.id, msg.format(user=member.user))
+            bot.send_message(message.chat.id, msg.format(user=member.user.username))
             continue
 
 
