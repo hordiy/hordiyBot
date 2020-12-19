@@ -81,7 +81,7 @@ def forward_message_for_users(message):
             continue
         finally:
             if len(users) > 0:
-                bot.send_message(message.chat.id, msg.format(user=", ".join(users)))
+                bot.send_message(message.chat.id, msg.format(users=", ".join(users)))
 
 
 @bot.message_handler(content_types=['text'])
