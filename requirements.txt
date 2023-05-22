@@ -3,6 +3,6 @@ bs4==0.0.1
 geojson==2.4.1
 pyowm==2.10.0
 pyTelegramBotAPI==3.6.6
-requests==2.22.0
+requests==2.31.0
 telebot==0.0.3
 
